@@ -2,7 +2,6 @@ import enum
 
 from dot import Dot
 from enum import Enum
-import game_exceptions as exceptions
 
 
 class ShipOrientation(Enum):
@@ -12,11 +11,6 @@ class ShipOrientation(Enum):
     vertical = 0
     horizontal = 1
 
-
-class ShipImage(enum.Enum):
-    vertical_bow = "▲"
-    horizontal_bow = "◄"
-    body = "◻"
 
 class ShipSize(Enum):
     """
@@ -31,7 +25,6 @@ class Ship:
     """
         Класс описывает корабль на игровом поле.
     """
-    _health = None
     SIZE = ShipSize
     ORIENTATION = ShipOrientation
 
@@ -58,7 +51,7 @@ class Ship:
 
     def is_alive(self) -> bool:
         """ Жив ли корабль. """
-        return self.health < 0
+        return self.health > 0
 
     def is_hit(self, shot: Dot) -> bool:
         """ Попал ли выстрел по кораблю. """
@@ -69,3 +62,4 @@ if __name__ == "__main__":
     ship_1 = Ship(size=ShipSize.medium, bow_location=Dot(2, 2), orientation=ShipOrientation.vertical)
     print(ship_1)
     print(ship_1.is_hit(Dot(2, 4)))
+    print(ship_1.health)
