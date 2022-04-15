@@ -2,6 +2,7 @@
 
 import enum
 import itertools
+from random import randint
 
 from ship import Ship
 from dot import Dot
@@ -32,7 +33,7 @@ class Symbol(enum.Enum):
     """
     sea = colorize("~", Color.blue)
     busy = colorize(".", Color.red)
-    ship = "◼"
+    ship = "■"
     unknown = "░"
     under_fire = colorize("X", Color.red)
 
@@ -42,8 +43,6 @@ class GameField:
         self.size = size
         self.hide = hide
         self.size_index = list(range(self.size))
-        self.field1 = [[Dot(x=column_number, y=line_number) for column_number in self.size_index] for line_number in
-                       self.size_index]
         self.field = [[Symbol.sea.value for column_number in self.size_index] for line_number in self.size_index]
         self.busy_dots = []
         self.already_shot = []
@@ -129,21 +128,31 @@ class GameField:
         field = tuple(zip(*field[::-1]))  # Разворачиваю поле, чтобы ось X была горизонтальна, а Y - вертикальна.
         for y in self.size_index:
             line_index = f"{Letter(y).name}  {blue_background('| ')}"
-            field_line = f"{blue_background(' | ').join(field[y][::-1])}{blue_background(' |')}"
+            field_line = field[y][::-1]
+            if self.hide:
+                field_line = [point.replace(Symbol.ship.value, Symbol.sea.value) for point in field_line]
+            field_line = f"{blue_background(' | ').join(field_line)}{blue_background(' |')}"
             line = line_index + blue_background(field_line)
             field_image.append(line)
 
         for line in field_image:
             print(line)
 
+    def get_random_free_dot(self):
+        for _ in range(2000):
+            dot = Dot(x=randint(0, self.size-1), y=randint(0, self.size-1))
+            if dot not in self.busy_dots:
+                return dot
+        return None
+
 
 if __name__ == "__main__":
     game_field = GameField()
     ship1 = Ship(size=Ship.SIZE.medium, orientation=Ship.ORIENTATION.horizontal, bow_location=Dot(x=0, y=0))
-    # ship2 = Ship(size=Ship.SIZE.medium, orientation=Ship.ORIENTATION.vertical, bow_location=Dot(4, 2))
+    ship2 = Ship(size=Ship.SIZE.medium, orientation=Ship.ORIENTATION.vertical, bow_location=Dot(4, 2))
     game_field.add_ship(ship1, verbose=False)
     print(ship1.dots)
-    # game_field.add_ship(ship2, verbose=False)
+    game_field.add_ship(ship2, verbose=False)
     game_field.render()
     game_field.strike(Dot(x=0, y=0))
     game_field.render()

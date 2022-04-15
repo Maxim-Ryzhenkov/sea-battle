@@ -7,9 +7,10 @@ from game_exceptions import BoardException
 
 
 class Player:
-    def __init__(self, board: GameField, enemy):
+    def __init__(self, board: GameField):
         self.board = board
-        self.enemy = enemy
+        self.enemy = None
+        self.name = None
 
     def ask_target(self):
         raise NotImplementedError
@@ -23,8 +24,16 @@ class Player:
             except BoardException as e:
                 print(e)
 
+    def set_enemy(self, enemy):
+        """ Назначить противника. """
+        self.enemy = enemy
+
 
 class AI(Player):
+    def __init__(self, board: GameField):
+        super().__init__(board)
+        self.name = 'компьютер'
+
     def ask_target(self) -> Dot:
         target = Dot(x=random.randint(0, 5), y=random.randint(0, 5))
         print(f"Компьютер стреляет в поле {target}")
@@ -37,21 +46,29 @@ class User(Player):
     """
     PATTERN = r"^([a-fA-F]+[0-9]|[0-9]+[a-fA-F])$"
 
+    def __init__(self, board: GameField):
+        super().__init__(board)
+        self.name = 'пользователь'
+
     def ask_target(self) -> Dot:
         """ Получить у пользователя точку для выстрела. """
         print("Ваш ход")
         while True:
             coord = input("Введите координаты: ").replace(" ", "")
-            if not re.match(User.PATTERN, coord):
+            pattern_verification = re.match(User.PATTERN, coord)
+            digit = re.findall('[1-6]', coord)
+            letter = re.findall('[a-fA-F]', coord)
+            if not all(condition for condition in (pattern_verification, digit, letter)):
                 print("Получены неверные координаты!\n"
                       "Координат должно быть ровно две, буква от A до F и цифра от 1 до 6.")
                 continue
-            digit = re.findall('[1-6]', coord)[0]
-            letter = re.findall('[a-fA-F]', coord)[0]
-            print(f"Буква: {letter}, цифра: {digit}")
-            return Dot(x=int(digit)-1, y=Letter[letter].value)
+            print(f"Буква: {letter[0]}, цифра: {digit[0]}")
+            return Dot(x=int(digit[0])-1, y=Letter[letter[0]].value)
 
 
-target = User(GameField(6), 1).ask_target()
-print(target)
+if __name__ == "__main__":
 
+    """ Для отладки. """
+    from game import Game
+    user = User(Game().get_random_board())
+    user.ask_target()

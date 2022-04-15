@@ -1,4 +1,5 @@
 import enum
+import random
 
 from dot import Dot
 from enum import Enum
@@ -40,14 +41,14 @@ class Ship:
     @property
     def dots(self) -> list:
         """ Получить точки в которых находится корабль. """
-        shop_dots = []
+        ship_dots = []
         for n in range(self.size.value):
             if self.orientation == ShipOrientation.vertical:
                 dot = Dot(x=self.bow_location.x, y=self.bow_location.y + n)
             else:
                 dot = Dot(x=self.bow_location.x + n, y=self.bow_location.y)
-            shop_dots.append(dot)
-        return shop_dots
+            ship_dots.append(dot)
+        return ship_dots
 
     def is_alive(self) -> bool:
         """ Жив ли корабль. """
@@ -59,7 +60,4 @@ class Ship:
 
 
 if __name__ == "__main__":
-    ship_1 = Ship(size=ShipSize.medium, bow_location=Dot(2, 2), orientation=ShipOrientation.vertical)
-    print(ship_1)
-    print(ship_1.is_hit(Dot(2, 4)))
-    print(ship_1.health)
+    pass
