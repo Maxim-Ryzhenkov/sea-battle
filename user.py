@@ -7,15 +7,20 @@ from game_exceptions import BoardException
 
 
 class Player:
+    """
+        Класс описывает абстрактный класс игрока общий для пользователя и компьютера.
+    """
     def __init__(self, board: GameField):
         self.board = board
         self.enemy = None
         self.name = None
 
-    def ask_target(self):
+    def ask_target(self) -> Dot:
+        """ Запросить координаты для выстрела. """
         raise NotImplementedError
 
-    def move(self):
+    def move(self) -> bool:
+        """ Сделать ход. """
         while True:
             try:
                 target = self.ask_target()
@@ -24,17 +29,23 @@ class Player:
             except BoardException as e:
                 print(e)
 
-    def set_enemy(self, enemy):
-        """ Назначить противника. """
+    def set_enemy(self, enemy) -> None:
+        """ Назначить противника.
+        :param enemy: Экземпляр класса AI или User.
+        """
         self.enemy = enemy
 
 
 class AI(Player):
+    """
+        Класс описывает игрока-компьютера.
+    """
     def __init__(self, board: GameField):
         super().__init__(board)
         self.name = 'компьютер'
 
     def ask_target(self) -> Dot:
+        """ Запросить координаты для выстрела. """
         target = Dot(x=random.randint(0, 5), y=random.randint(0, 5))
         print(f"Компьютер стреляет в поле {target}")
         return target
@@ -42,7 +53,7 @@ class AI(Player):
 
 class User(Player):
     """
-        Класс описывает пользователя
+        Класс описывает игрока-пользователя.
     """
     PATTERN = r"^([a-fA-F]+[0-9]|[0-9]+[a-fA-F])$"
 
@@ -55,7 +66,7 @@ class User(Player):
         print("Ваш ход")
         while True:
             coord = input("Введите координаты: ").replace(" ", "")
-            pattern_verification = re.match(User.PATTERN, coord)
+            pattern_verification = re.match(User.PATTERN, coord)   # проверка на соответствие шаблону
             digit = re.findall('[1-6]', coord)
             letter = re.findall('[a-fA-F]', coord)
             if not all(condition for condition in (pattern_verification, digit, letter)):

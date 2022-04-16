@@ -1,4 +1,4 @@
-import enum
+import os
 from random import randint, shuffle
 
 from ship import Ship
@@ -7,12 +7,10 @@ from user import User, AI
 from game_exceptions import BoardWrongShipException
 
 
-class Player(enum.Enum):
-    user = 0
-    ai = 1
-
-
 class Game:
+    """
+        Класс с логикой игры.
+    """
     def __init__(self, board_size=6):
         self.board_size = board_size
         self.user = User(board=self.get_random_board())
@@ -23,11 +21,12 @@ class Game:
         self.ai.board.hide = True
         self.current_player = self.user
 
-    def switch_player(self):
+    def switch_player(self) -> None:
         """ Сменить активного игрока. """
         self.current_player = self.user if self.current_player == self.ai else self.ai
 
-    def greet(self):
+    def greet(self) -> None:
+        """ Вывести приветствие и правила. """
         print("-------------------------")
         print("Приветствуем вас")
         print("в игре")
@@ -38,6 +37,7 @@ class Game:
         print("цифра - номер столбца")
 
     def try_board(self) -> GameField or None:
+        """ Попытаться случайно расставить корабли на доске. """
         board = GameField(size=self.board_size)
         ships_sizes = [Ship.SIZE.small,
                        Ship.SIZE.small,
@@ -63,12 +63,14 @@ class Game:
         return board
 
     def get_random_board(self) -> GameField:
+        """ Получить случайным образом сгенерированную доску. """
         board = None
         while not board:
             board = self.try_board()
         return board
 
-    def render_boards(self):
+    def render_boards(self) -> None:
+        """ Нарисовать доски игроков. """
         print("-" * 20)
         print("Доска пользователя:")
         self.user.board.render()
@@ -76,7 +78,8 @@ class Game:
         print("Доска компьютера:")
         self.ai.board.render()
 
-    def loop(self):
+    def loop(self) -> None:
+        """ Основной цикл игры. """
         while True:
             self.render_boards()
             print(f"Ходит {self.current_player.name}!")
@@ -89,9 +92,8 @@ class Game:
                 break
             if not repeat:
                 self.switch_player()
+                os.system('cls')  # очистить консоль
 
 
 if __name__ == "__main__":
-
-    Game().loop()
-
+    pass
